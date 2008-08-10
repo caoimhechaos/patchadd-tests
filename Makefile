@@ -2,6 +2,7 @@ TESTS=		20080809
 OLD=		${TESTS:S/$/.old/}
 NEW=		${TESTS:S/$/.new/}
 RM?=		rm -f
+OPENSSL=	openssl
 
 all:
 
@@ -17,3 +18,5 @@ show-vars:
 
 ${OLD} ${NEW}:
 	${CC} ${CFLAGS} -o ${.TARGET} ${.TARGET:S/$/.c/}
+	${OPENSSL} smime -sign -binary -outform PEM -signer testkey.pem	\
+		-in ${.TARGET} -out ${.TARGET:S/$/.sig/}
