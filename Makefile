@@ -50,6 +50,7 @@ ${TARS}: ${PATCHES}
 	echo MACHINE_ARCH=${OSARCH} >> +INFO
 	echo PATCHTOOLS=0.1 >> +INFO
 	echo NAME=${.TARGET:S/.tbz$//} >> +INFO
+	echo "COMMENT=Test patch ${.TARGET:S/.tbz$//}" >> +INFO
 	echo "Test patch ${.TARGET:S/.tbz$//}" > +COMMENT
 	echo "./${.TARGET:S/.tbz$//} ${.TARGET:S/.tbz$/.bsdiff/} `sha1 -n "${.TARGET:S/.tbz$/.old/}" | awk '{ print $$1 }'` `sha1 -n "${.TARGET:S/.tbz$/.new/}" | awk '{ print $$1 }'`" > +CONTENTS
 	${TAR} cjvf ${.TARGET} +INFO +COMMENT +CONTENTS ${.TARGET:S/.tbz$/.bsdiff/}
