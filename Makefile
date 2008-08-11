@@ -5,10 +5,15 @@ PATCHES=	${TESTS:S/$/.bsdiff/}
 TARS=		${TESTS:S/$/.tbz/}
 SIGS=		${TESTS:S/$/.tbz.sig/}
 OUTPUTS=	${TESTS:S/$/.out/}
+CP?=		cp
 RM?=		rm -f
 OPENSSL?=	openssl
 BSDIFF?=	bsdiff
+DIFF?=		diff -u
 TAR?=		tar
+PATCHADD?=	/usr/local/bin/patch_add
+PATCHDEL?=	/usr/local/bin/patch_delete
+SPOOLDIR?=	/var/spool/patches
 
 OSABI!=		uname -s
 OSVERS!=	uname -r
@@ -22,7 +27,7 @@ test:	${OUTPUTS}
 
 clean:
 	${RM} ${OLD} ${NEW} ${OLD:S/$/.sig/} ${NEW:S/$/.sig/} ${PATCHES}
-	${RM} ${TARS} ${SIGS} ${OUTPUTS} +COMMENT +CONTENTS +INFO
+	${RM} ${TESTS} ${TARS} ${SIGS} ${OUTPUTS} +COMMENT +CONTENTS +INFO
 
 show-vars:
 	@echo "Tests: ${TESTS}"
@@ -54,3 +59,12 @@ ${SIGS}: ${TARS}
 		-in ${.TARGET:S/.sig$//} -out ${.TARGET}
 
 ${OUTPUTS}: ${TARS} ${SIGS}
+	${CP} ${.TARGET:S/.out$/.old/} ${.TARGET:S/.out$//}
+	${CP} ${.TARGET:S/.out$/.tbz/} ${.TARGET:S/.out$/.tbz.sig/} ${SPOOLDIR}
+	./${.TARGET:S/.out$//} > ${.TARGET:S/$/.new/}
+	${PATCHADD} ${.TARGET:S/.out$//}
+	./${.TARGET:S/.out$//} >> ${.TARGET:S/$/.new/}
+	${PATCHDEL} ${.TARGET:S/.out$//}
+	./${.TARGET:S/.out$//} >> ${.TARGET:S/$/.new/}
+	${DIFF} ${.TARGET:S/$/.new/} ${.TARGET:S/.out$/.txt/} &&	\
+		${CP} ${.TARGET:S/$/.new/} ${.TARGET}
