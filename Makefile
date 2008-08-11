@@ -28,6 +28,7 @@ test:	${OUTPUTS}
 clean:
 	${RM} ${OLD} ${NEW} ${OLD:S/$/.sig/} ${NEW:S/$/.sig/} ${PATCHES}
 	${RM} ${TESTS} ${TARS} ${SIGS} ${OUTPUTS} +COMMENT +CONTENTS +INFO
+	${RM} ${OUTPUTS:S/$/.new/}
 
 show-vars:
 	@echo "Tests: ${TESTS}"
